@@ -70,7 +70,7 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return  [s, s, w, s, w, w, s]
 
 def depthFirstSearch(problem):
     """
@@ -87,7 +87,37 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    result = []
+
+    # mark starting state as visited 
+    visited = [problem.getStartState()]
+
+    priority = 0
+
+    pq = util.PriorityQueue()
+    
+    for successor in problem.getSuccessors(problem.getStartState()):
+        pq.push((successor, [successor[1]]), priority)
+
+    while not pq.isEmpty():
+
+        ((position, direction, _), path) = pq.pop()
+
+        if problem.isGoalState(position):
+            print "final", path
+            return path
+            
+        priority -= 1      
+
+        for child in problem.getSuccessors(position):
+
+            if child[0] not in visited:
+                pq.push((child, path + [child[1]]), priority)
+        
+        visited.append(position)
+
     util.raiseNotDefined()
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
