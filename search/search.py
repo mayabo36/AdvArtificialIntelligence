@@ -73,20 +73,7 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s]
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    """
-    "*** YOUR CODE HERE ***"
     result = []
 
     # mark starting state as visited 
@@ -104,13 +91,11 @@ def depthFirstSearch(problem):
         ((position, direction, _), path) = pq.pop()
 
         if problem.isGoalState(position):
-            print "final", path
             return path
             
         priority -= 1      
 
         for child in problem.getSuccessors(position):
-
             if child[0] not in visited:
                 pq.push((child, path + [child[1]]), priority)
         
@@ -120,8 +105,33 @@ def depthFirstSearch(problem):
     
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    result = []
+
+    # mark starting state as visited 
+    visited = [problem.getStartState()]
+
+    priority = 0
+
+    pq = util.PriorityQueue()
+    
+    for successor in problem.getSuccessors(problem.getStartState()):
+        pq.push((successor, [successor[1]]), priority)
+
+    while not pq.isEmpty():
+
+        ((position, direction, _), path) = pq.pop()
+
+        if problem.isGoalState(position):
+            return path
+            
+        priority += 1      
+
+        for child in problem.getSuccessors(position):
+            if child[0] not in visited:
+                pq.push((child, path + [child[1]]), priority)
+        
+        visited.append(position)
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
