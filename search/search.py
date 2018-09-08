@@ -74,8 +74,6 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem):
 
-    result = []
-
     # mark starting state as visited 
     visited = [problem.getStartState()]
 
@@ -88,7 +86,7 @@ def depthFirstSearch(problem):
 
     while not pq.isEmpty():
 
-        ((position, direction, _), path) = pq.pop()
+        ((position, _, _), path) = pq.pop()
 
         if problem.isGoalState(position):
             return path
@@ -105,7 +103,6 @@ def depthFirstSearch(problem):
     
 
 def breadthFirstSearch(problem):
-    result = []
 
     # mark starting state as visited 
     visited = [problem.getStartState()]
@@ -119,7 +116,7 @@ def breadthFirstSearch(problem):
 
     while not pq.isEmpty():
 
-        ((position, direction, _), path) = pq.pop()
+        ((position, _, _), path) = pq.pop()
 
         if problem.isGoalState(position):
             return path
@@ -136,7 +133,32 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+
+    # mark starting state as visited 
+    visited = [problem.getStartState()]
+
+    priority = 0
+
+    pq = util.PriorityQueue()
+    
+    for successor in problem.getSuccessors(problem.getStartState()):
+        pq.push((successor, [successor[1]]), priority)
+
+    while not pq.isEmpty():
+
+        ((position, _, _), path) = pq.pop()
+
+        if problem.isGoalState(position):
+            return path
+            
+        priority =  problem.getCostOfActions(path)    
+
+        for child in problem.getSuccessors(position):
+            if child[0] not in visited:
+                pq.push((child, path + [child[1]]), priority)
+        
+        visited.append(position)
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
