@@ -98,8 +98,6 @@ def depthFirstSearch(problem):
                 pq.push((child, path + [child[1]]), priority)
         
         visited.append(position)
-
-    util.raiseNotDefined()
     
 
 def breadthFirstSearch(problem):
@@ -159,7 +157,6 @@ def uniformCostSearch(problem):
         
         visited.append(position)
 
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -170,8 +167,30 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # mark starting state as visited 
+    visited = [problem.getStartState()]
+
+    priority = 0
+
+    pq = util.PriorityQueue()
+    
+    for successor in problem.getSuccessors(problem.getStartState()):
+        pq.push((successor, [successor[1]]), heuristic(successor[0], problem))
+
+    while not pq.isEmpty():
+
+        ((position, _, _), path) = pq.pop()
+
+        if problem.isGoalState(position):
+            return path
+            
+        priority =  problem.getCostOfActions(path) + heuristic(position, problem)
+
+        for child in problem.getSuccessors(position):
+            if child[0] not in visited:
+                pq.push((child, path + [child[1]]), priority)
+        
+        visited.append(position)
 
 
 # Abbreviations
