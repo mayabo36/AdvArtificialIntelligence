@@ -103,7 +103,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
 
     # mark starting state as visited 
-    visited = [problem.getStartState()]
+    visited = {problem.getStartState()}
 
     priority = 0
 
@@ -111,6 +111,7 @@ def breadthFirstSearch(problem):
     
     for successor in problem.getSuccessors(problem.getStartState()):
         pq.push((successor, [successor[1]]), priority)
+        visited.add(successor[0])
 
     while not pq.isEmpty():
 
@@ -124,23 +125,20 @@ def breadthFirstSearch(problem):
         for child in problem.getSuccessors(position):
             if child[0] not in visited:
                 pq.push((child, path + [child[1]]), priority)
+                visited.add(child[0])
         
-        visited.append(position)
 
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
 
     # mark starting state as visited 
-    visited = [problem.getStartState()]
+    visited = set()
 
     priority = 0
 
     pq = util.PriorityQueue()
-    
-    for successor in problem.getSuccessors(problem.getStartState()):
-        pq.push((successor, [successor[1]]), priority)
+    pq.push(((problem.getStartState(), None, None), []), 0)
 
     while not pq.isEmpty():
 
@@ -148,15 +146,13 @@ def uniformCostSearch(problem):
 
         if problem.isGoalState(position):
             return path
-            
-        priority =  problem.getCostOfActions(path)    
 
-        for child in problem.getSuccessors(position):
+        for child in problem.getSuccessors(position) if position not in visited else {}:
             if child[0] not in visited:
-                pq.push((child, path + [child[1]]), priority)
+                pq.push((child, path + [child[1]]), problem.getCostOfActions(path + [child[1]]))
+           
+        visited.add(position)
         
-        visited.append(position)
-
 
 def nullHeuristic(state, problem=None):
     """
@@ -168,14 +164,12 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     # mark starting state as visited 
-    visited = [problem.getStartState()]
+    visited = set()
 
     priority = 0
 
     pq = util.PriorityQueue()
-    
-    for successor in problem.getSuccessors(problem.getStartState()):
-        pq.push((successor, [successor[1]]), heuristic(successor[0], problem))
+    pq.push(((problem.getStartState(), None, None), []), 0)
 
     while not pq.isEmpty():
 
@@ -183,14 +177,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
         if problem.isGoalState(position):
             return path
-            
-        priority =  problem.getCostOfActions(path) + heuristic(position, problem)
 
-        for child in problem.getSuccessors(position):
+        for child in problem.getSuccessors(position) if position not in visited else {}:
             if child[0] not in visited:
-                pq.push((child, path + [child[1]]), priority)
-        
-        visited.append(position)
+                pq.push((child, path + [child[1]]), problem.getCostOfActions(path + [child[1]]) + heuristic(child[0], problem))
+           
+        visited.add(position)
 
 
 # Abbreviations
