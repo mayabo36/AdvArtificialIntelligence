@@ -103,7 +103,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
 
     # mark starting state as visited 
-    visited = {problem.getStartState()}
+    visited = [problem.getStartState()]
 
     priority = 0
 
@@ -111,7 +111,7 @@ def breadthFirstSearch(problem):
     
     for successor in problem.getSuccessors(problem.getStartState()):
         pq.push((successor, [successor[1]]), priority)
-        visited.add(successor[0])
+        visited.append(successor[0])
 
     while not pq.isEmpty():
 
@@ -125,7 +125,8 @@ def breadthFirstSearch(problem):
         for child in problem.getSuccessors(position):
             if child[0] not in visited:
                 pq.push((child, path + [child[1]]), priority)
-                visited.add(child[0])
+                visited.append(child[0])
+    return []
         
 
 
