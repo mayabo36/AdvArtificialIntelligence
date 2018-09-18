@@ -355,8 +355,28 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+
+    if problem.isGoalState(state):
+        return 0
+
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+
+    items = state[1][:]
+
+    position = state[0]
+
+    distance_sum = 0
+
+    while items:
+        distance, corner = min([(util.manhattanDistance(position, corner), corner) for corner in items])
+        items.remove(corner)
+        distance_sum += distance
+        position = corner
+    
+    return distance_sum
+
+
 
     "*** YOUR CODE HERE ***"
     return 0 # Default to trivial solution
@@ -452,8 +472,22 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    
     "*** YOUR CODE HERE ***"
-    return 0
+
+    food = foodGrid.asList()
+
+    result = 0
+
+    if len(food) == 0:
+        return result
+
+    for pellet in food:
+        distance = mazeDistance(position, pellet, problem.startingGameState)
+        if distance > result:
+            result = distance
+
+    return result
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -484,7 +518,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.astar(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -520,7 +554,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """
