@@ -315,11 +315,37 @@ def betterEvaluationFunction(currentGameState):
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION:
+
+      If we won, return high score, if we lost return wost score.
+
+      Calculate distance to closest ghost and reward pacman for staying at least 1 step away from them.
+      Calculate distance to closest pellet or edible ghost and penalize pacman for being far away from it.
+      Penalize pacman for the amount of food left to encourage him to eat more.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
+    newPos = currentGameState.getPacmanPosition()
+    newGhostStates = currentGameState.getGhostStates()
+
+    if currentGameState.isWin():
+        return float("inf")
+    if currentGameState.isLose():
+        return float("-inf")
+    
+    # we always want to be at least 1 away from any ghosts unless we can eat them
+    distanceToClosestGhost = max([4] +[util.manhattanDistance(ghost.getPosition(), newPos) for ghost in newGhostStates if ghost.scaredTimer == 0])
+
+    # we want pacman to eat pellets and ghosts if he can
+    pellets = currentGameState.getFood().asList()
+    distanceToClosestPellet = min([util.manhattanDistance(pellet, newPos) for pellet in pellets +
+                                  [ghost.getPosition() for ghost in newGhostStates if ghost.scaredTimer != 0]]) \
+                                  if len(pellets) != 1 else util.manhattanDistance(pellets[0], newPos)
+
+    foodLeft = len(pellets)
+    capsulesLeft = len(currentGameState.getCapsules())
+
+    return scoreEvaluationFunction(currentGameState) + (-distanceToClosestPellet * 2) + (distanceToClosestGhost * 2) + (-foodLeft * 2) + (-capsulesLeft)
 
 # Abbreviation
 better = betterEvaluationFunction
