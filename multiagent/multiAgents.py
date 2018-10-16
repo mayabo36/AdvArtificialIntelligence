@@ -327,6 +327,7 @@ def betterEvaluationFunction(currentGameState):
 
     newPos = currentGameState.getPacmanPosition()
     newGhostStates = currentGameState.getGhostStates()
+    pellets = currentGameState.getFood().asList()
 
     if currentGameState.isWin():
         return float("inf")
@@ -334,18 +335,26 @@ def betterEvaluationFunction(currentGameState):
         return float("-inf")
     
     # we always want to be at least 1 away from any ghosts unless we can eat them
-    distanceToClosestGhost = max([4] +[util.manhattanDistance(ghost.getPosition(), newPos) for ghost in newGhostStates if ghost.scaredTimer == 0])
+    distanceToClosestGhost = max([1] +[util.manhattanDistance(ghost.getPosition(), newPos) for ghost in newGhostStates if ghost.scaredTimer == 0])
 
     # we want pacman to eat pellets and ghosts if he can
-    pellets = currentGameState.getFood().asList()
     distanceToClosestPellet = min([util.manhattanDistance(pellet, newPos) for pellet in pellets +
                                   [ghost.getPosition() for ghost in newGhostStates if ghost.scaredTimer != 0]]) \
                                   if len(pellets) != 1 else util.manhattanDistance(pellets[0], newPos)
+    
+    # if pacman can eat something this is great
+    if distanceToClosestPellet == 0:
+        return float("inf")
 
-    foodLeft = len(pellets)
-    capsulesLeft = len(currentGameState.getCapsules())
+    foodLeft = currentGameState.getNumFood()
 
-    return scoreEvaluationFunction(currentGameState) + (-distanceToClosestPellet * 2) + (distanceToClosestGhost * 2) + (-foodLeft * 2) + (-capsulesLeft)
+    pelletWeight, ghostWeight, foodWeight = 2, 2, 2
+
+    # if the ghost is far away then we don't care
+    if distanceToClosestGhost > 2:
+        ghostWeight = 0
+
+    return (scoreEvaluationFunction(currentGameState)) + (-distanceToClosestPellet * pelletWeight) + (distanceToClosestGhost * ghostWeight) + (-foodLeft * foodWeight)
 
 # Abbreviation
 better = betterEvaluationFunction
