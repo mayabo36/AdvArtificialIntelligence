@@ -47,7 +47,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
 
         for i in range(iterations):
-            calculated_values = util.Counter() # initialize calculated values
+            calculated_values = util.Counter()
             for state in self.mdp.getStates():
                 value = None
                 for action in self.mdp.getPossibleActions(state):
